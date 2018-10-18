@@ -1,19 +1,20 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Camera } from '@ionic-native/camera';
+import { StatusBar } from '@ionic-native/status-bar';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Camera } from '@ionic-native/camera';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
 import { IonicStorageModule, Storage } from '@ionic/storage';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { NativeStorage } from '@ionic-native/native-storage';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
+import { MyApp } from './app.component';
+import { Util } from '../providers/util/util';
 import { Items } from '../mocks/providers/items';
 import { MessageMocks } from '../mocks/messageMocks';
-import { MyApp } from './app.component';
 import { HttpProvider } from '../providers/http/http';
-import { Util } from '../providers/util/util';
 import { UserProvider } from '../providers/user/user';
 
 // The translate loader needs to know where to load i18n files
@@ -45,16 +46,16 @@ export function createTranslateLoader(http: HttpClient) {
     MyApp
   ],
   providers: [
+    Util,
     Items,
     Camera,
-    SplashScreen,
     StatusBar,
-    MessageMocks,
-    // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    UserProvider,
     HttpProvider,
-    Util,
-    UserProvider
+    MessageMocks,
+    SplashScreen,
+    NativeStorage,
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
 export class AppModule { }

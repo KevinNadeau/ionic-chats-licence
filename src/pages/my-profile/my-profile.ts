@@ -3,13 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Util} from "../../providers/util/util";
 import {User} from "../../models/user";
 import {HttpProvider} from "../../providers/http/http";
+import { UserProvider } from '../../providers/user/user';
 
-/**
- * Generated class for the MyProfilePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -17,32 +12,46 @@ import {HttpProvider} from "../../providers/http/http";
   templateUrl: 'my-profile.html',
 })
 
-/**
- * @author: KMR
- * @email: yajuve.25.dz@gmail.com
- */
-
 export class MyProfilePage {
 
   public Util = Util;
+  public oldEmail:string;
   private profile: User = new User();
   private isLoading: boolean = true;
+  /* Creation de variable */
+  private string:string = "Chaine de caract.";
+  private intEtFloat:Number = 22.22;
+  private boolean:boolean = true;
+  private fourTout:any = { toto: "toto" };
+  private fourToutArray:any = [{ toto: "toto" }];
+  private instanceUser:User = new User();
+  private tableauInt:Array<Number> = [22,11];
+  private tableauTout:Array<any> = [22,1.1,true,[22], this.instanceUser];
 
-  constructor(public http:HttpProvider, public navCtrl: NavController, public navParams: NavParams) {
+
+  constructor(
+    public http:HttpProvider,
+    public navParams: NavParams,
+    public navCtrl: NavController,
+    private userProvider:UserProvider) {
   }
 
   ionViewDidLoad() {
-    this.isLoading = true;
-    this.http.get('my-profile.json').subscribe((profile) => {
-      this.isLoading = false;
-      this.profile = <User>profile;
-    }, (err) => {
-      console.error(err);
-    });
+    this.isLoading = false;
+    this.profile = <User> this.userProvider.user;
+    this.oldEmail = this.profile.email;
   }
 
   doSubmit() {
-    
+    if( this.oldEmail === this.profile.email){
+      this.userProvider.updateUser(this.profile).then(
+        data => this.navCtrl.setRoot("ListFriendsPage")
+      )
+    }else{
+      this.userProvider.updateUser(this.profile, {type: true, email: this.oldEmail}).then(
+        data => this.navCtrl.setRoot("ListFriendsPage")
+      )
+    }
   }
 
 }

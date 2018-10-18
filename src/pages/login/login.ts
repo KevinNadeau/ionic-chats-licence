@@ -1,9 +1,9 @@
+import { User } from "../../models/user";
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, MenuController } from 'ionic-angular';
 import { UserProvider } from "../../providers/user/user";
 import { HttpProvider } from "../../providers/http/http";
-import { User } from "../../models/user";
+import { IonicPage, NavController, MenuController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -13,11 +13,12 @@ import { User } from "../../models/user";
 
 export class LoginPage {
     // Cette variable nous permets de pre-remplire les formulaire de login ou register.
-    public account = {
+    public account:User = {
         username: 'yajuve',
+        password: 'themike',
+        avatar: 'Raouf.png',
         fullname: 'Mohamed Raouf',
         email: 'mike.sylvestre@lyknowledge.io',
-        password: 'themike'
     };
 
 
@@ -26,15 +27,15 @@ export class LoginPage {
 
     constructor(
       public http: HttpProvider,
-      public userProvider: UserProvider,
-      public menuCtrl: MenuController,
       public navCtrl: NavController,
+      public menuCtrl: MenuController,
+      public userProvider: UserProvider,
       public translateService: TranslateService) {
         this.menuCtrl.enable(false); // Pas d'affichage de menu
     }
 
     // Attempt to login in through our User service
-    doLogin() {
+    doLogin_v1() {
         this.http.get('my-profile.json').subscribe(
           (profile:User) => { // Requet asyn. sur le fichier my-profile.json qui ce situe dans asset mocks et le contenu du fichier est mise dans la variable profile
             this.userProvider.user = < User > profile; // Ajout du profile user dans la class UserProvider grace au setter. Grace a sa, nous pouvont recuperer le profile à tout moments vu qu'il est stocker dans la class UserProvider
@@ -53,6 +54,28 @@ export class LoginPage {
             console.error(err); // En cas d'erreur sur la recup de l'utilisateur
         });
         console.log("MIKE'")
+    }
+
+    doLogin() {
+      this.userProvider.loginUser(this.account.email, this.account.password).then(
+        isConnect => {
+          if(isConnect)
+            this.navCtrl.setRoot('ListFriendsPage'); // setRoot -> permet de supprimer toutes les vues de la stack et de naviguer vers la root page.
+          else
+            this.loginErrorString = "Coonnection error";
+        }
+      )
+    }
+
+    doRegister() {
+      this.userProvider.registerUser(this.account).then(
+        isConnect => {
+          if(isConnect)
+            this.navCtrl.setRoot('ListFriendsPage'); // setRoot -> permet de supprimer toutes les vues de la stack et de naviguer vers la root page.
+          else
+            this.loginErrorString = "Coonnection error";
+        }
+      )
     }
 
     checkedUser(users:User){
